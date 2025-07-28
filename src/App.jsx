@@ -1,5 +1,4 @@
-import React from "react";
-import { PDFViewer } from "@react-pdf/renderer";
+import React, { useEffect, useState } from "react";
 import MyDocument from "./components/documentPDF/myDocument";
 
 const dadosMock = {
@@ -13,14 +12,26 @@ const dadosMock = {
 };
 
 function DocumentViewer() {
+  const [PDFViewer, setPDFViewer] = useState(null);
+
+  useEffect(() => {
+    // Importa dinamicamente apenas no browser
+    import("@react-pdf/renderer").then((module) => {
+      setPDFViewer(() => module.PDFViewer);
+    });
+  }, []);
+
   return (
-    <div style={{ padding: '1rem', height: '600px', }}>
+    <div style={{ padding: "1rem", height: "600px" }}>
       <h1>
         Olá, <span>{dadosMock.colaborador}</span> seu relatório está pronto!
       </h1>
-      <PDFViewer style={{ width: '100%', height: '100%' }}>
-        <MyDocument {...dadosMock} style={{ text: 60, }} />
-      </PDFViewer>
+
+      {PDFViewer && (
+        <PDFViewer style={{ width: "100%", height: "100%" }}>
+          <MyDocument {...dadosMock} />
+        </PDFViewer>
+      )}
     </div>
   );
 }
